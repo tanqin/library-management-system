@@ -5,12 +5,15 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private String name;
     //状态
     private String status;
     //余额
     private BigDecimal money;
+
+    private String password;
 
     public User() {
     }

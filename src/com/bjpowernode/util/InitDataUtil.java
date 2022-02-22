@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class InitDataUtil {
     public static void main(String[] args) {
-//        initUser(null);
+        initUser(null);
     }
 
     public static void initUser(List<User> userList) {

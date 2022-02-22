@@ -1,5 +1,7 @@
 package com.bjpowernode.module.user;
 
+import com.bjpowernode.service.UserService;
+import com.bjpowernode.service.impl.UserServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.User;
@@ -19,8 +21,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -43,13 +45,14 @@ public class UserViewCtrl implements Initializable {
 
     // 可观察的 List，即后台数据可以与页面数据进行同步绑定
     ObservableList<User> users = FXCollections.observableArrayList();
+    UserService userService = new UserServiceImpl();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // 调用 Service 层查询数据
+        List<User> userList = userService.select();
+        users.addAll(userList);
 
-        users.add(new User(1, "张三", "正常", new BigDecimal(("100"))));
-        users.add(new User(2, "李四", "正常", new BigDecimal(("100"))));
-        users.add(new User(3, "王五", "正常", new BigDecimal(("100"))));
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         c2.setCellValueFactory(new PropertyValueFactory<>("name"));
         c3.setCellValueFactory(new PropertyValueFactory<>("money"));
@@ -62,15 +65,15 @@ public class UserViewCtrl implements Initializable {
     private void deleteUser() {
         try {
             User user = this.userTableView.getSelectionModel().getSelectedItem();
-            if (user == null){
-                Alerts.warning("未选择","请先选择要删除的数据");
+            if (user == null) {
+                Alerts.warning("未选择", "请先选择要删除的数据");
                 return;
             }
             this.users.remove(user);
             Alerts.success("成功", "操作成功");
         } catch (Exception e) {
             e.printStackTrace();
-            Alerts.error("失败","操作失败");
+            Alerts.error("失败", "操作失败");
         }
     }
 
@@ -78,8 +81,8 @@ public class UserViewCtrl implements Initializable {
     private void chargeView() {
         try {
             User user = this.userTableView.getSelectionModel().getSelectedItem();
-            if (user == null){
-                Alerts.warning("未选择","请先选择要充值的数据");
+            if (user == null) {
+                Alerts.warning("未选择", "请先选择要充值的数据");
                 return;
             }
             initChargeStage(user);
@@ -94,8 +97,8 @@ public class UserViewCtrl implements Initializable {
     @FXML
     private void frozen() {
         User user = this.userTableView.getSelectionModel().getSelectedItem();
-        if (user == null){
-            Alerts.warning("未选择","请先选择要修改的数据");
+        if (user == null) {
+            Alerts.warning("未选择", "请先选择要修改的数据");
             return;
         }
         user.setStatus(Constant.USER_FROZEN);
@@ -109,12 +112,12 @@ public class UserViewCtrl implements Initializable {
     private void userEditView() {
         try {
             User user = this.userTableView.getSelectionModel().getSelectedItem();
-            if (user == null){
-                Alerts.warning("未选择","请先选择要修改的数据");
+            if (user == null) {
+                Alerts.warning("未选择", "请先选择要修改的数据");
                 return;
             }
 
-           initStage(user);
+            initStage(user);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -142,7 +145,7 @@ public class UserViewCtrl implements Initializable {
         Scene scene = new Scene(target);
 
         Stage stage = new Stage();//创建舞台；
-        UserChargeViewCtrl controller = (UserChargeViewCtrl)loader.getController();
+        UserChargeViewCtrl controller = (UserChargeViewCtrl) loader.getController();
         controller.setStage(stage);
         controller.setUser(user);
         controller.setUserTableView(userTableView);
@@ -167,7 +170,7 @@ public class UserViewCtrl implements Initializable {
 
 
         Stage stage = new Stage();//创建舞台；
-        UserHandleViewCtrl controller = (UserHandleViewCtrl)loader.getController();
+        UserHandleViewCtrl controller = (UserHandleViewCtrl) loader.getController();
         controller.setStage(stage);
         controller.setUsers(users);
         controller.setUser(user);
