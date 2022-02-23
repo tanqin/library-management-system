@@ -16,11 +16,22 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 查询
+     *
      * @return
      */
     @Override
     public List<User> select() {
         // 调用 Dao 层方法
         return userDao.select();
+    }
+
+    /**
+     * 添加
+     *
+     * @param user
+     */
+    @Override
+    public void add(User user) {
+        userDao.add(user);
     }
 }
