@@ -57,6 +57,9 @@ public class UserHandleViewCtrl {
             } else {
                 //修改操作
                 populate(this.user);
+
+                // 对修改的用户数据进行持久化到文件
+                userService.update(user);
                 //刷新
                 userTableView.refresh();
             }

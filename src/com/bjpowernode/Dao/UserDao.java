@@ -8,4 +8,6 @@ public interface UserDao {
     List<User> select();
 
     void add(User user);
+
+    void update(User user);
 }
