@@ -117,4 +117,41 @@ public class UserDaoImpl implements UserDao {
             }
         }
     }
+
+    /**
+     * É¾³ý
+     *
+     * @param id
+     */
+    @Override
+    public void delete(int id) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+
+        try {
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH));
+            List<User> list = (List<User>) ois.readObject();
+
+            User user = list.stream().filter(p -> p.getId() == id).findFirst().get();
+            list.remove(user);
+
+            oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
+            oos.writeObject(list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
