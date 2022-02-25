@@ -1,6 +1,7 @@
 package com.bjpowernode.Dao.impl;
 
 import com.bjpowernode.Dao.UserDao;
+import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.PathConstant;
 import com.bjpowernode.bean.User;
 
@@ -60,10 +61,9 @@ public class UserDaoImpl implements UserDao {
             // 写入文件
             oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
             oos.writeObject(list);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         } finally {
             try {
                 if (ois != null) {
@@ -100,10 +100,9 @@ public class UserDaoImpl implements UserDao {
             oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
             oos.writeObject(list);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         } finally {
             try {
                 if (ois != null) {
@@ -137,10 +136,46 @@ public class UserDaoImpl implements UserDao {
 
             oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
             oos.writeObject(list);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+            // 将异常抛给控制器处理
+            throw new RuntimeException();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 冻结
+     * @param id
+     */
+    @Override
+    public void frozen(int id) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH));
+            List<User> list = (List<User>) ois.readObject();
+
+            User user = list.stream().filter(p -> p.getId() == id).findFirst().get();
+
+            user.setStatus(Constant.USER_FROZEN);
+
+            oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
+            oos.writeObject(list);
+
+        } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException();
         } finally {
             try {
                 if (ois != null) {

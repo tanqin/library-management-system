@@ -103,6 +103,8 @@ public class UserViewCtrl implements Initializable {
             Alerts.warning("未选择", "请先选择要修改的数据");
             return;
         }
+        // 冻结数据持久化
+        userService.frozen(user.getId());
         user.setStatus(Constant.USER_FROZEN);
         userTableView.refresh();
     }
