@@ -13,34 +13,32 @@ import java.util.List;
 
 public class InitDataUtil {
     public static void main(String[] args) {
-        initUser(null);
-        initBook(null);
+        List<User> userList = new ArrayList<User>();
+        userList.add(new User(1001, "刘一", Constant.USER_OK, BigDecimal.TEN));
+        initData(PathConstant.USER_PATH, userList);
+
+        List<Book> bookList = new ArrayList<Book>();
+        bookList.add(new Book(1, "java入门", "张三", Constant.TYPE_COMPUTER, "12-987", "XX出版社", Constant.STATUS_STORAGE));
+        initData(PathConstant.BOOK_PATH, bookList);
     }
 
     /**
-     * 初始化用户数据方法
+     * 初始化数据方法
      *
-     * @param userList
+     * @param list
      */
-    public static void initUser(List<User> userList) {
+    public static void initData(String path, List<?> list) {
         ObjectOutputStream oos = null;
         try {
             // 创建文件夹和文件
-            File folder = new File(PathConstant.FOLDER_PATH);
-            File file = new File(PathConstant.USER_PATH);
+            File folder = new File(path.split("/")[0] + "/");
+            File file = new File(path);
 
             if (!folder.exists() && !file.exists()) {
                 folder.mkdir();
                 file.createNewFile();
-                List<User> list = new ArrayList<User>();
-                if (userList == null) {
-                    // 创建初始数据
-                    list.add(new User(1001, "刘一", Constant.USER_OK, BigDecimal.TEN));
-                } else {
-                    list = userList;
-                }
                 // 对象输出流写入数据至文件
-                oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
+                oos = new ObjectOutputStream(new FileOutputStream(path));
                 oos.writeObject(list);
             }
         } catch (Exception e) {
@@ -55,47 +53,5 @@ public class InitDataUtil {
                 }
             }
         }
-
-
     }
-
-    /**
-     * 初始化图书数据方法
-     *
-     * @param bookList
-     */
-    public static void initBook(List<Book> bookList) {
-        ObjectOutputStream oos = null;
-        try {
-            File folder = new File("book/");
-            File file = new File(PathConstant.BOOK_PATH);
-
-            if (!folder.exists() && !file.exists()) {
-                folder.mkdir();
-                file.createNewFile();
-
-                List<Book> list = new ArrayList<Book>();
-
-                if (bookList == null) {
-                    list.add(new Book(1, "java入门", "张三", Constant.TYPE_COMPUTER, "12-987", "XX出版社", Constant.STATUS_STORAGE));
-                } else {
-                    list = bookList;
-                }
-
-                oos = new ObjectOutputStream(new FileOutputStream(PathConstant.BOOK_PATH));
-                oos.writeObject(list);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (oos != null) {
-                    oos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }
