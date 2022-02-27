@@ -1,6 +1,8 @@
 
 package com.bjpowernode.module.book;
 
+import com.bjpowernode.service.BookService;
+import com.bjpowernode.service.impl.BookServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -58,13 +61,12 @@ public class BookViewCtrl implements Initializable {
     private TextField isbnField;
 
     ObservableList<Book> books = FXCollections.observableArrayList();
+    private BookService bookService = new BookServiceImpl();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        books.add(new Book(1, "java实战入门", "张三", Constant.TYPE_COMPUTER, "12-987", "XX出版社", Constant.STATUS_STORAGE));
-        books.add(new Book(2, "编程之道", "李四", Constant.TYPE_COMPUTER, "1245-987", "XX出版社", Constant.STATUS_STORAGE));
-        books.add(new Book(3, "颈椎病康复指南", "王五", Constant.TYPE_COMPUTER, "08712-987", "XX出版社", Constant.STATUS_STORAGE));
+        List<Book> bookList = bookService.select(null);
+        books.addAll(bookList);
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         c2.setCellValueFactory(new PropertyValueFactory<>("bookName"));
         c3.setCellValueFactory(new PropertyValueFactory<>("author"));
@@ -83,8 +85,8 @@ public class BookViewCtrl implements Initializable {
     private void lendBook() {
         try {
             Book book = this.bookTableView.getSelectionModel().getSelectedItem();
-            if (book == null){
-                Alerts.warning("未选择","请先选择要借阅的书籍");
+            if (book == null) {
+                Alerts.warning("未选择", "请先选择要借阅的书籍");
                 return;
             }
 
@@ -98,15 +100,15 @@ public class BookViewCtrl implements Initializable {
     private void deleteBook() {
         try {
             Book book = this.bookTableView.getSelectionModel().getSelectedItem();
-            if (book == null){
-                Alerts.warning("未选择","请先选择要删除的数据");
+            if (book == null) {
+                Alerts.warning("未选择", "请先选择要删除的数据");
                 return;
             }
             this.books.remove(book);
             Alerts.success("成功", "图书修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            Alerts.error("失败","图书修改失败");
+            Alerts.error("失败", "图书修改失败");
         }
     }
 
@@ -114,24 +116,16 @@ public class BookViewCtrl implements Initializable {
         查询
      */
     @FXML
-    private void bookSelect(){
+    private void bookSelect() {
         String bookName = bookNameField.getText();
         String isbn = isbnField.getText();
-        boolean bookFlag = "".equals(bookName);
-        boolean isbnFlag = "".equals(isbn);
-        ObservableList<Book> result = books;
-        if (bookFlag && isbnFlag) {
-            return;
-        }else {
-            if (!bookFlag){
-                result = books.filtered(s -> s.getBookName().contains(bookName));
-            }
-            if (!isbnFlag) {
-                result = books.filtered(s -> s.getIsbn().contains(isbn));
-            }
-        }
+        Book book = new Book();
+        book.setBookName(bookName);
+        book.setIsbn(isbn);
+        // 根据条件查询图书
+        List<Book> bookList = bookService.select(book);
 
-        books = new ObservableListWrapper<Book>(new ArrayList<Book>(result));
+        books = new ObservableListWrapper<Book>(new ArrayList<Book>(bookList));
         bookTableView.setItems(books);
     }
 
@@ -142,12 +136,12 @@ public class BookViewCtrl implements Initializable {
     private void bookEditView(MouseEvent event) {
         try {
             Book book = this.bookTableView.getSelectionModel().getSelectedItem();
-            if (book == null){
-                Alerts.warning("未选择","请先选择要修改的数据");
+            if (book == null) {
+                Alerts.warning("未选择", "请先选择要修改的数据");
                 return;
             }
 
-           initStage(book);
+            initStage(book);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,7 +169,7 @@ public class BookViewCtrl implements Initializable {
         Scene scene = new Scene(target);
 
         Stage stage = new Stage();//创建舞台；
-        BookLendViewCtrl controller = (BookLendViewCtrl)loader.getController();
+        BookLendViewCtrl controller = (BookLendViewCtrl) loader.getController();
         controller.setStage(stage);
         controller.setBook(book);
         stage.setHeight(800);
@@ -199,7 +193,7 @@ public class BookViewCtrl implements Initializable {
 
 
         Stage stage = new Stage();//创建舞台；
-        BookHandleViewCtrl controller = (BookHandleViewCtrl)loader.getController();
+        BookHandleViewCtrl controller = (BookHandleViewCtrl) loader.getController();
         controller.setStage(stage);
         controller.setBooks(books);
         controller.setBook(book);
