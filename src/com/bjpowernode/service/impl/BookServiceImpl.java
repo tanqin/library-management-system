@@ -20,4 +20,24 @@ public class BookServiceImpl implements BookService {
     public List<Book> select(Book book) {
         return bookDao.select(book);
     }
+
+    /**
+     * Ìí¼Ó
+     *
+     * @param book
+     */
+    @Override
+    public void add(Book book) {
+        bookDao.add(book);
+    }
+
+    /**
+     * É¾³ý
+     *
+     * @param id
+     */
+    @Override
+    public void delete(int id) {
+        bookDao.delete(id);
+    }
 }
