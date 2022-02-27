@@ -3,6 +3,7 @@ package com.bjpowernode.Dao.impl;
 import com.bjpowernode.Dao.BookDao;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.PathConstant;
+import com.bjpowernode.util.BeanUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -134,6 +135,56 @@ public class BookDaoImpl implements BookDao {
                 // 删除数据
                 // 删除前需要保证 Book 类重写了 equals() 和 hashCode() 方法
                 bookList.remove(book);
+
+                // 存储数据
+                oos = new ObjectOutputStream(new FileOutputStream(PathConstant.BOOK_PATH));
+                oos.writeObject(bookList);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 图书修改
+     *
+     * @param book
+     */
+    @Override
+    public void update(Book book) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        try {
+            // 读取数据
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.BOOK_PATH));
+            List<Book> bookList = (List<Book>) ois.readObject();
+
+            if (bookList != null) {
+                // 查询原始数据
+                Book originBook = bookList.stream().filter(b -> b.getId() == book.getId()).findFirst().get();
+
+//                originBook.setBookName(book.getBookName());
+//                originBook.setIsbn(book.getIsbn());
+//                originBook.setAuthor(book.getAuthor());
+//                originBook.setPublisher(book.getPublisher());
+//                originBook.setType(book.getType());
+
+                // 当要修改的属性很多时，上面的写法就显得笨拙
+                // 所以我们需要利用反射封装一个通用的工具类来进行两个对象间的赋值
+                BeanUtil.populate(originBook, book);
 
                 // 存储数据
                 oos = new ObjectOutputStream(new FileOutputStream(PathConstant.BOOK_PATH));
