@@ -18,8 +18,11 @@ public class InitDataUtil {
         initData(PathConstant.USER_PATH, userList);
 
         List<Book> bookList = new ArrayList<Book>();
-        bookList.add(new Book(1, "java入门", "张三", Constant.TYPE_COMPUTER, "123-1", "XX出版社", Constant.STATUS_STORAGE));
-        bookList.add(new Book(2, "java进阶", "李四", Constant.TYPE_COMPUTER, "123-1", "机械工业出版社", Constant.STATUS_STORAGE));
+        bookList.add(new Book(1, "java入门", "刘一", Constant.TYPE_COMPUTER, "123-1", "季节出版社", Constant.STATUS_STORAGE));
+        bookList.add(new Book(2, "java进阶", "陈二", Constant.TYPE_COMPUTER, "123-2", "机械工业出版社", Constant.STATUS_STORAGE));
+        bookList.add(new Book(3, "文化苦旅", "张三", Constant.TYPE_LITERATURE, "456-1", "散文出版社", Constant.STATUS_STORAGE));
+        bookList.add(new Book(4, "摩根财团", "李四", Constant.TYPE_ECONOMY, "789-1", "摩根出版社", Constant.STATUS_STORAGE));
+        bookList.add(new Book(5, "卓有成效的管理者", "王五", Constant.TYPE_MANAGEMENT, "910-1", "管理出版社", Constant.STATUS_STORAGE));
         initData(PathConstant.BOOK_PATH, bookList);
     }
 
