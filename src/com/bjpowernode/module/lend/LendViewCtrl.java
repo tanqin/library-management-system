@@ -67,7 +67,7 @@ public class LendViewCtrl implements Initializable {
         Book book = new Book(1, "java实战入门", "张三", Constant.TYPE_COMPUTER, "12-987", "XX出版社", Constant.STATUS_STORAGE);
         User user = new User(1, "张三", "正常", new BigDecimal(("100")));
         LocalDate now = LocalDate.now();
-        lends.add(new Lend(1,book,user, Constant.LEND_LEND, now,now.plusDays(30)));
+        lends.add(new Lend("1",book,user, Constant.LEND_LEND, now,now.plusDays(30)));
 
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         //获取图书名称

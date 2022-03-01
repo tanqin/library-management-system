@@ -22,7 +22,6 @@ public class ChartDaoImpl implements ChartDao {
 
             // 数据分组
             Map<String, List<Book>> collect = bookList.stream().collect(Collectors.groupingBy(Book::getType));
-            System.out.println(collect);
             // 获取迭代器
             Iterator<Map.Entry<String, List<Book>>> iterator = collect.entrySet().iterator();
             // 创建 Map 集合

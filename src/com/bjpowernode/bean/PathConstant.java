@@ -10,4 +10,7 @@ public class PathConstant {
 
     // Í¼ÊéÂ·¾¶
     public static final String BOOK_PATH = "book/book.txt";
+
+    // ½èÔÄÂ·¾¶
+    public static final String LEND_PATH = "lend/lend.txt";
 }
