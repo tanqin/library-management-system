@@ -1,5 +1,7 @@
 package com.bjpowernode.module.lend;
 
+import com.bjpowernode.service.LendService;
+import com.bjpowernode.service.impl.LendServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
@@ -28,6 +30,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -42,7 +45,7 @@ public class LendViewCtrl implements Initializable {
     @FXML
     private TableColumn<Lend, String> c1;
     @FXML
-    private TableColumn<Lend,String> c2;
+    private TableColumn<Lend, String> c2;
     @FXML
     private TableColumn<Lend, String> c3;
     @FXML
@@ -62,17 +65,16 @@ public class LendViewCtrl implements Initializable {
 
     ObservableList<Lend> lends = FXCollections.observableArrayList();
 
+    private LendService lendService = new LendServiceImpl();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Book book = new Book(1, "java实战入门", "张三", Constant.TYPE_COMPUTER, "12-987", "XX出版社", Constant.STATUS_STORAGE);
-        User user = new User(1, "张三", "正常", new BigDecimal(("100")));
-        LocalDate now = LocalDate.now();
-        lends.add(new Lend("1",book,user, Constant.LEND_LEND, now,now.plusDays(30)));
-
+        List<Lend> lendList = lendService.select(null);
+        lends.addAll(lendList);
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         //获取图书名称
         c2.setCellValueFactory((TableColumn.CellDataFeatures<Lend, String> p) ->
-            new SimpleObjectProperty(p.getValue().getBook().getBookName())
+                new SimpleObjectProperty(p.getValue().getBook().getBookName())
         );
         c3.setCellValueFactory((TableColumn.CellDataFeatures<Lend, String> p) ->
                 new SimpleObjectProperty(p.getValue().getBook().getIsbn())
@@ -87,29 +89,21 @@ public class LendViewCtrl implements Initializable {
 
     }
 
-
     /*
         查询
      */
     @FXML
-    private void lendSelect(){
+    private void lendSelect() {
         String lendName = lendNameField.getText();
         String isbn = isbnField.getText();
-        boolean lendFlag = "".equals(lendName);
-        boolean isbnFlag = "".equals(isbn);
-        ObservableList<Lend> result = lends;
-        if (lendFlag && isbnFlag) {
-            return;
-        }else {
-//            if (!lendFlag){
-//                result = lends.filtered(s -> s.getLendName().contains(lendName));
-//            }
-//            if (!isbnFlag) {
-//                result = lends.filtered(s -> s.getIsbn().contains(isbn));
-//            }
-        }
+        Book book = new Book();
+        book.setBookName(lendName);
+        book.setIsbn(isbn);
+        Lend lend = new Lend();
+        lend.setBook(book);
+        List<Lend> selectList = lendService.select(lend);
 
-        lends = new ObservableListWrapper<Lend>(new ArrayList<Lend>(result));
+        lends = new ObservableListWrapper<Lend>(new ArrayList<Lend>(selectList));
         lendTableView.setItems(lends);
     }
 
@@ -117,10 +111,10 @@ public class LendViewCtrl implements Initializable {
         还书
      */
     @FXML
-    private void returnBook(){
+    private void returnBook() {
         Lend lend = this.lendTableView.getSelectionModel().getSelectedItem();
-        if (lend == null){
-            Alerts.warning("未选择","请先选择要归还的书籍");
+        if (lend == null) {
+            Alerts.warning("未选择", "请先选择要归还的书籍");
             return;
         }
         lend.setStatus(Constant.LEND_RETURN);
@@ -131,10 +125,10 @@ public class LendViewCtrl implements Initializable {
         续借
      */
     @FXML
-    private void renew(){
+    private void renew() {
         Lend lend = this.lendTableView.getSelectionModel().getSelectedItem();
-        if (lend == null){
-            Alerts.warning("未选择","请先选择要续借的书籍");
+        if (lend == null) {
+            Alerts.warning("未选择", "请先选择要续借的书籍");
             return;
         }
         lend.setReturnDate(LocalDate.now().plusDays(30));
@@ -153,7 +147,7 @@ public class LendViewCtrl implements Initializable {
 
 
         Stage stage = new Stage();//创建舞台；
-        LendHandleViewCtrl controller = (LendHandleViewCtrl)loader.getController();
+        LendHandleViewCtrl controller = (LendHandleViewCtrl) loader.getController();
         controller.setStage(stage);
         controller.setLends(lends);
         controller.setLend(lend);
