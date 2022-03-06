@@ -8,6 +8,7 @@ import com.bjpowernode.bean.User;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户 Dao 层
@@ -156,6 +157,7 @@ public class UserDaoImpl implements UserDao {
 
     /**
      * 冻结
+     *
      * @param id
      */
     @Override
@@ -188,5 +190,24 @@ public class UserDaoImpl implements UserDao {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 查询可借阅用户
+     *
+     * @return
+     */
+    @Override
+    public List<User> selectUserToLend() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH))) {
+            List<User> userList = (List<User>) ois.readObject();
+            if (userList != null) {
+                List<User> collect = userList.stream().filter(u -> false == u.getLend() && Constant.USER_OK.equals(u.getStatus())).collect(Collectors.toList());
+                return collect;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 }

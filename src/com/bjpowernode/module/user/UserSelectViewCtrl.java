@@ -1,5 +1,7 @@
 package com.bjpowernode.module.user;
 
+import com.bjpowernode.Dao.UserDao;
+import com.bjpowernode.Dao.impl.UserDaoImpl;
 import com.bjpowernode.bean.User;
 import com.bjpowernode.global.util.Alerts;
 import com.bjpowernode.module.book.BookLendViewCtrl;
@@ -14,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -36,12 +39,12 @@ public class UserSelectViewCtrl implements Initializable {
 
     private BookLendViewCtrl bookLendViewCtrl;
 
+    private UserDao userDao = new UserDaoImpl();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        users.add(new User(1, "张三", "正常", new BigDecimal(("100"))));
-        users.add(new User(2, "李四", "正常", new BigDecimal(("100"))));
-        users.add(new User(3, "王五", "正常", new BigDecimal(("100"))));
+        List<User> userList = userDao.selectUserToLend();
+        users.addAll(userList);
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         c2.setCellValueFactory(new PropertyValueFactory<>("name"));
         userTableView.setItems(users);
@@ -51,8 +54,8 @@ public class UserSelectViewCtrl implements Initializable {
     @FXML
     private void userSelect() {
         User user = this.userTableView.getSelectionModel().getSelectedItem();
-        if (user == null){
-            Alerts.warning("未选择","请先选择用户");
+        if (user == null) {
+            Alerts.warning("未选择", "请先选择用户");
             return;
         }
 

@@ -12,17 +12,22 @@ public class User implements Serializable {
     private String status;
     //余额
     private BigDecimal money;
-
-    private String password;
+    // 标识当前用户是否有借书
+    private Boolean isLend;
 
     public User() {
     }
 
-    public User(int id, String name, String status, BigDecimal money) {
+    public User(int id, String name, String status, BigDecimal money, Boolean isLend) {
         this.id = id;
         this.name = name;
         this.status = status;
         this.money = money;
+        this.isLend = isLend;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     public int getId() {
@@ -57,31 +62,35 @@ public class User implements Serializable {
         this.money = money;
     }
 
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", money=" + money +
-                '}';
+    public Boolean getLend() {
+        return isLend;
+    }
+
+    public void setLend(Boolean lend) {
+        isLend = lend;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(status, user.status) &&
-                Objects.equals(money, user.money);
+
+        if (id != user.id) return false;
+        if (name != null ? !name.equals(user.name) : user.name != null) return false;
+        if (status != null ? !status.equals(user.status) : user.status != null) return false;
+        if (money != null ? !money.equals(user.money) : user.money != null) return false;
+        return isLend != null ? isLend.equals(user.isLend) : user.isLend == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, status, money);
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (money != null ? money.hashCode() : 0);
+        result = 31 * result + (isLend != null ? isLend.hashCode() : 0);
+        return result;
     }
-
-
 }

@@ -1,5 +1,4 @@
 package com.bjpowernode.Dao;
-
 import com.bjpowernode.bean.User;
 
 import java.util.List;
@@ -14,4 +13,6 @@ public interface UserDao {
     void delete(int id);
 
     void frozen(int id);
+
+    List<User> selectUserToLend();
 }
