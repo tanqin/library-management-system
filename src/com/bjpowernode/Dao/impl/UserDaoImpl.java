@@ -4,6 +4,7 @@ import com.bjpowernode.Dao.UserDao;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.PathConstant;
 import com.bjpowernode.bean.User;
+import com.bjpowernode.util.BeanUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,6 +28,28 @@ public class UserDaoImpl implements UserDao {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH))) {
             list = (List<User>) ois.readObject();
             return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 如果以上代码出现异常，则返回 List 对象
+        return new ArrayList<>();
+    }
+
+    /**
+     * 用户条件查询
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public List<User> select(User user) {
+        // 查数据
+        List<User> list = null;
+        // 自动关闭流
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH))) {
+            list = (List<User>) ois.readObject();
+            return list.stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,8 +118,7 @@ public class UserDaoImpl implements UserDao {
 
             User originUser = list.stream().filter(p -> p.getId() == user.getId()).findFirst().get();
 
-            originUser.setName(user.getName());
-            originUser.setMoney(user.getMoney());
+            BeanUtil.populate(originUser, user);
 
             oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
             oos.writeObject(list);

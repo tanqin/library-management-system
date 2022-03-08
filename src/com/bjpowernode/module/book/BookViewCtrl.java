@@ -85,11 +85,10 @@ public class BookViewCtrl implements Initializable {
     private void lendBook() {
         try {
             Book book = this.bookTableView.getSelectionModel().getSelectedItem();
-            if (book == null) {
-                Alerts.warning("未选择", "请先选择要借阅的书籍");
+            if (book == null || book.getStatus().equals(Constant.STATUS_LEND)) {
+                Alerts.warning("未选择", "请选择可借阅的书籍");
                 return;
             }
-
             initLendStage(book);
         } catch (IOException e) {
             e.printStackTrace();
@@ -171,6 +170,8 @@ public class BookViewCtrl implements Initializable {
 
         Stage stage = new Stage();//创建舞台；
         BookLendViewCtrl controller = (BookLendViewCtrl) loader.getController();
+        // 获取 BookLendViewCtrl 控制器对象，调用 setBookTableView() 方法，传入 bookTableView
+        controller.setBookTableView(bookTableView);
         controller.setStage(stage);
         controller.setBook(book);
         stage.setHeight(800);

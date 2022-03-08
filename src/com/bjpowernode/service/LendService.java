@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface LendService {
     List<Lend> select(Lend lend);
+
+    void add(int bookId, int userId);
 }

@@ -26,6 +26,17 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 条件查询
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public List<User> select(User user) {
+        return userDao.select(user);
+    }
+
+    /**
      * 添加
      *
      * @param user
@@ -67,10 +78,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 借阅用户查询
+     *
      * @return
      */
     @Override
     public List<User> selectUserToLend() {
         return userDao.selectUserToLend();
     }
+
 }

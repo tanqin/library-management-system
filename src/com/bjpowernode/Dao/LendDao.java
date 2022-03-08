@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface LendDao {
     List<Lend> select(Lend lend);
+
+    void add(Lend lend);
+
 }

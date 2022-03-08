@@ -1,11 +1,11 @@
 package com.bjpowernode.Dao.impl;
 
 import com.bjpowernode.Dao.LendDao;
+import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Lend;
 import com.bjpowernode.bean.PathConstant;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,6 +51,43 @@ public class LendDaoImpl implements LendDao {
             // 追踪输出至标准错误流
             e.printStackTrace();
             throw new RuntimeException();
+        }
+    }
+
+
+    /**
+     * 添加借阅
+     *
+     * @param lend
+     */
+    @Override
+    public void add(Lend lend) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.LEND_PATH));
+            List<Lend> lendList = (List<Lend>) ois.readObject();
+            if (lendList != null) {
+                lendList.add(lend);
+            } else {
+                lendList = new ArrayList<>();
+            }
+            oos = new ObjectOutputStream(new FileOutputStream(PathConstant.LEND_PATH));
+            oos.writeObject(lendList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

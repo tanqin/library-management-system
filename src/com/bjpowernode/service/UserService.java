@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface UserService {
     List<User> select();
+    List<User> select(User user);
 
     void add(User user);
 
