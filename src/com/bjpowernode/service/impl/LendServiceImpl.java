@@ -2,10 +2,7 @@ package com.bjpowernode.service.impl;
 
 import com.bjpowernode.Dao.LendDao;
 import com.bjpowernode.Dao.impl.LendDaoImpl;
-import com.bjpowernode.bean.Book;
-import com.bjpowernode.bean.Constant;
-import com.bjpowernode.bean.Lend;
-import com.bjpowernode.bean.User;
+import com.bjpowernode.bean.*;
 import com.bjpowernode.service.BookService;
 import com.bjpowernode.service.LendService;
 import com.bjpowernode.service.UserService;
@@ -30,6 +27,12 @@ public class LendServiceImpl implements LendService {
         return lendDao.select(lend);
     }
 
+    /**
+     * 添加借阅
+     *
+     * @param bookId
+     * @param userId
+     */
     @Override
     public void add(int bookId, int userId) {
         Book paramBook = new Book();
@@ -66,5 +69,29 @@ public class LendServiceImpl implements LendService {
 
         // 添加借阅数据
         lendDao.add(lend);
+    }
+
+
+    /**
+     * 还书
+     *
+     * @param lend
+     * @return
+     */
+    @Override
+    public List<Lend> returnBook(Lend lend) {
+        Book book = lend.getBook();
+        User user = lend.getUser();
+
+        book.setStatus(Constant.STATUS_STORAGE);
+        user.setLend(false);
+
+        userService.update(user);
+        bookService.update(book);
+
+
+        lendDao.returnBook(lend.getId());
+        List<Lend> lendList = lendDao.select(null);
+        return lendList;
     }
 }

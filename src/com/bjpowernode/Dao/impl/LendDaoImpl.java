@@ -2,6 +2,7 @@ package com.bjpowernode.Dao.impl;
 
 import com.bjpowernode.Dao.LendDao;
 import com.bjpowernode.bean.Book;
+import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.Lend;
 import com.bjpowernode.bean.PathConstant;
 
@@ -74,6 +75,40 @@ public class LendDaoImpl implements LendDao {
             }
             oos = new ObjectOutputStream(new FileOutputStream(PathConstant.LEND_PATH));
             oos.writeObject(lendList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * ªπ È
+     *
+     * @param lendId
+     */
+    @Override
+    public void returnBook(String lendId) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.LEND_PATH));
+            List<Lend> lendList = (List<Lend>) ois.readObject();
+
+            List<Lend> newList = lendList.stream().filter(l -> !(l.getId().equals(lendId))).collect(Collectors.toList());
+
+            oos = new ObjectOutputStream(new FileOutputStream(PathConstant.LEND_PATH));
+            oos.writeObject(newList);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();

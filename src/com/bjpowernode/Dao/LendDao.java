@@ -9,4 +9,6 @@ public interface LendDao {
 
     void add(Lend lend);
 
+    void returnBook(String lendId);
+
 }

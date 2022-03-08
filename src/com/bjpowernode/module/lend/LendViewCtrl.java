@@ -117,8 +117,9 @@ public class LendViewCtrl implements Initializable {
             Alerts.warning("未选择", "请先选择要归还的书籍");
             return;
         }
-        lend.setStatus(Constant.LEND_RETURN);
-        lend.setReturnDate(LocalDate.now());
+        List<Lend> lendList = lendService.returnBook(lend);
+        ObservableListWrapper<Lend> lends = new ObservableListWrapper<>(new ArrayList<>(lendList));
+        lendTableView.setItems(lends);
     }
 
     /*
