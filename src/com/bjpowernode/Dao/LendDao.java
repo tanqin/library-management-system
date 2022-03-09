@@ -11,4 +11,5 @@ public interface LendDao {
 
     void returnBook(String lendId);
 
+    void update(Lend lend);
 }

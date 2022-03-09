@@ -75,7 +75,6 @@ public class BookViewCtrl implements Initializable {
         c6.setCellValueFactory(new PropertyValueFactory<>("publisher"));
         c7.setCellValueFactory(new PropertyValueFactory<>("status"));
         bookTableView.setItems(books);
-
     }
 
     /*

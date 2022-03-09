@@ -50,6 +50,7 @@ public class UserHandleViewCtrl {
                 populate(user);
                 //设置状态为正常
                 user.setStatus(Constant.USER_OK);
+                user.setLend(false);
 
                 // 用户数据持久化到文件
                 userService.add(user);

@@ -5,8 +5,10 @@ import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.Lend;
 import com.bjpowernode.bean.PathConstant;
+import com.bjpowernode.util.BeanUtil;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,6 +111,41 @@ public class LendDaoImpl implements LendDao {
 
             oos = new ObjectOutputStream(new FileOutputStream(PathConstant.LEND_PATH));
             oos.writeObject(newList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void update(Lend lend) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        try {
+            // 读取原始数据
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.LEND_PATH));
+            List<Lend> lendList = (List<Lend>) ois.readObject();
+
+            if (lendList != null) {
+                // 查找数据，赋新值
+                Lend originLend = lendList.stream().filter(l -> l.getId().equals(lend.getId())).findFirst().get();
+                BeanUtil.populate(originLend, lend);
+
+                // 输出新数据
+                oos = new ObjectOutputStream(new FileOutputStream(PathConstant.LEND_PATH));
+                oos.writeObject(lendList);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();

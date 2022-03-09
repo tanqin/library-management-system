@@ -1,7 +1,12 @@
 package com.bjpowernode.module.lend;
 
+import com.bjpowernode.module.book.BookViewCtrl;
+import com.bjpowernode.service.BookService;
 import com.bjpowernode.service.LendService;
+import com.bjpowernode.service.UserService;
+import com.bjpowernode.service.impl.BookServiceImpl;
 import com.bjpowernode.service.impl.LendServiceImpl;
+import com.bjpowernode.service.impl.UserServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
@@ -29,6 +34,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -66,10 +72,68 @@ public class LendViewCtrl implements Initializable {
     ObservableList<Lend> lends = FXCollections.observableArrayList();
 
     private LendService lendService = new LendServiceImpl();
+    private UserService userService = new UserServiceImpl();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         List<Lend> lendList = lendService.select(null);
+        // 计算用户逾期后的余额
+        lendList.forEach(l -> {
+            LocalDate returnDate = l.getReturnDate();
+//            LocalDate now = LocalDate.now();
+            LocalDate now = LocalDate.parse("2022-04-20");
+
+            // 计算时间差
+//            int days = now.compareTo(returnDate);
+            int days = Period.between(returnDate, now).getDays();
+            if (days > 0) {
+                /*
+                    逾期：
+                        逾期小于等于 30 天，用户余额扣除用户预期天数金额，归还日期自动改为当天
+                        逾期大于 30 天，用户余额扣除 30 元，归还日期自动改为当天
+                        如果用户余额小于 0，则状态变为冻结
+                        冻结的用户不能还书，需要先充值
+                 */
+                // 方法一
+              /*  User user = l.getUser();
+                if (days <= 30) {
+                    // 计算滞纳金
+                    user.setMoney(user.getMoney().subtract(BigDecimal.valueOf(days)));
+                } else {
+                    user.setMoney(user.getMoney().subtract(BigDecimal.valueOf(30)));
+                }
+                l.setReturnDate(now);
+                if (user.getMoney().compareTo(BigDecimal.ZERO) < 0) {
+                    user.setStatus(Constant.USER_FROZEN);
+                }
+                l.setUser(user);
+                lendService.update(l);
+                userService.update(user);*/
+
+                // 方法二
+                User user = l.getUser();
+                BigDecimal originMoney = user.getMoney();
+                BigDecimal delayMoney;
+
+                // 计算滞纳金
+                if (days <= 30) {
+                    delayMoney = new BigDecimal(days);
+                } else {
+                    delayMoney = new BigDecimal(30);
+                }
+                // 扣款
+                user.setMoney(originMoney.subtract(delayMoney));
+
+                // 归还日期改为今日
+                l.setReturnDate(now);
+                if (user.getMoney().compareTo(BigDecimal.ZERO) < 0) {
+                    user.setStatus(Constant.USER_FROZEN);
+                }
+                l.setUser(user);
+                lendService.update(l);
+                userService.update(user);
+            }
+        });
         lends.addAll(lendList);
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         //获取图书名称

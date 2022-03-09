@@ -225,11 +225,13 @@ public class UserDaoImpl implements UserDao {
             List<User> userList = (List<User>) ois.readObject();
             if (userList != null) {
                 List<User> collect = userList.stream().filter(u -> false == u.getLend() && Constant.USER_OK.equals(u.getStatus())).collect(Collectors.toList());
+                System.out.println(collect);
                 return collect;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return new ArrayList<>();
     }
 }

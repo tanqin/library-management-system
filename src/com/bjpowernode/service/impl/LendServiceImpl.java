@@ -94,4 +94,9 @@ public class LendServiceImpl implements LendService {
         List<Lend> lendList = lendDao.select(null);
         return lendList;
     }
+
+    @Override
+    public void update(Lend lend) {
+        lendDao.update(lend);
+    }
 }

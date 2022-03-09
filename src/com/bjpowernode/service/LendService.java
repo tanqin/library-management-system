@@ -10,4 +10,6 @@ public interface LendService {
     void add(int bookId, int userId);
 
     List<Lend> returnBook(Lend lend);
+
+    void update(Lend lend);
 }
