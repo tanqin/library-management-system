@@ -1,10 +1,15 @@
 package com.bjpowernode.service.impl;
 
+import com.bjpowernode.Dao.LendDao;
 import com.bjpowernode.Dao.UserDao;
+import com.bjpowernode.Dao.impl.LendDaoImpl;
 import com.bjpowernode.Dao.impl.UserDaoImpl;
+import com.bjpowernode.bean.Constant;
+import com.bjpowernode.bean.Lend;
 import com.bjpowernode.bean.User;
 import com.bjpowernode.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -13,6 +18,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     // 多态写法
     UserDao userDao = new UserDaoImpl();
+    LendDao lendDao = new LendDaoImpl();
 
     /**
      * 查询
@@ -86,4 +92,33 @@ public class UserServiceImpl implements UserService {
         return userDao.selectUserToLend();
     }
 
+    /**
+     * 用户充值
+     *
+     * @param user
+     * @param money
+     * @return
+     */
+    @Override
+    public User charge(User user, BigDecimal money) {
+        BigDecimal currentMoney = money.add(user.getMoney());
+        user.setMoney(currentMoney);
+
+        if (currentMoney.compareTo(BigDecimal.ZERO) > 0) {
+            user.setStatus(Constant.USER_OK);
+        }
+
+        // 更新用户数据和借阅数据
+        userDao.update(user);
+        List<Lend> lendList = lendDao.select(null);
+        for (int i = 0; i < lendList.size(); i++) {
+            Lend lendItem = lendList.get(i);
+            if (lendItem.getUser().getId() == user.getId()) {
+                lendItem.setUser(user);
+                lendDao.update(lendItem);
+            }
+        }
+
+        return user;
+    }
 }
